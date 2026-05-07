@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual do Setor de Qualidade — Soma Prime</title>
+<style>
+:root {
+  --gold: #c9a84c;
+  --gold2: #e8c97a;
+  --gold3: rgba(201,168,76,0.12);
+  --black: #07070f;
+  --d1: #0c0c18;
+  --d2: #111120;
+  --d3: #181828;
+  --d4: #1f1f30;
+  --border: rgba(201,168,76,0.13);
+  --border2: rgba(201,168,76,0.28);
+  --text: #eee8de;
+  --muted: #857d6e;
+  --dim: #46433c;
+  --red: #e05555;
+  --green: #4ab87a;
+  --sw: 240px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--black); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.65; }
+
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sw); background: var(--d1); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 200; transition: transform 0.3s; overflow-y: auto; }
+.sb-brand { padding: 28px 20px 20px; border-bottom: 1px solid var(--border); }
+.sb-brand h2 { font-size: 14px; color: var(--text); margin-bottom: 8px; }
+.sb-tagline { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
+.sb-nav { padding: 18px 12px; flex: 1; }
+.sb-nav-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); font-weight: 700; padding: 0 8px; margin-bottom: 10px; }
+.sb-btn { width: 100%; display: flex; align-items: center; gap: 11px; padding: 10px 11px; border-radius: 8px; border: 1px solid transparent; background: none; color: var(--muted); font-size: 13px; font-weight: 500; text-align: left; cursor: pointer; margin-bottom: 3px; transition: all 0.15s; position: relative; }
+.sb-btn::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px; background: var(--gold); border-radius: 0 2px 2px 0; transform: scaleY(0); transition: transform 0.2s; }
+.sb-btn:hover { background: var(--d3); color: var(--text); }
+.sb-btn.active { background: var(--gold3); border-color: var(--border2); color: var(--gold); }
+.sb-btn.active::before { transform: scaleY(1); }
+.sb-icon { width: 30px; height: 30px; border-radius: 6px; background: var(--d3); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.sb-btn.active .sb-icon { background: var(--gold3); }
+.sb-num { font-size: 9px; color: var(--dim); font-weight: 700; }
+.sb-name { font-size: 12px; }
+
+.sb-progress { margin: 0 12px 16px; padding: 12px 14px; background: var(--d2); border: 1px solid var(--border); border-radius: 8px; }
+.sb-prog-bar { height: 3px; background: var(--d4); border-radius: 2px; overflow: hidden; margin-bottom: 5px; }
+.sb-prog-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold2)); width: 14%; transition: width 0.4s ease; }
+.sb-prog-text { font-size: 11px; color: var(--muted); }
+
+.sb-footer { padding: 14px 16px; border-top: 1px solid var(--border); }
+.print-btn { width: 100%; background: var(--gold); color: var(--black); border: none; border-radius: 8px; padding: 11px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+.print-btn:hover { background: var(--gold2); transform: translateY(-1px); }
+
+.topbar { display: none; position: fixed; top: 0; left: 0; right: 0; height: 52px; background: var(--d1); border-bottom: 1px solid var(--border2); align-items: center; padding: 0 14px; gap: 12px; z-index: 300; }
+.menu-btn { width: 36px; height: 36px; background: none; border: 1px solid var(--border2); border-radius: 8px; color: var(--gold); font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.tb-title { flex: 1; font-size: 13px; font-weight: 600; color: var(--gold); }
+
+.gbar { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, var(--gold), var(--gold2)); width: 14%; z-index: 999; transition: width 0.4s ease; }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 150; }
+.overlay.on { display: block; }
+
+.main { margin-left: var(--sw); min-height: 100vh; }
+.hero { background: linear-gradient(135deg, var(--d1) 0%, var(--d2) 60%, var(--d1) 100%); border-bottom: 1px solid var(--border2); padding: 40px 48px 32px; position: relative; overflow: hidden; }
+.hero::after { content: ''; position: absolute; right: -60px; top: -60px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%); pointer-events: none; }
+
+.hero-eyebrow { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.hero-title { font-family: Georgia, serif; font-size: 36px; font-weight: 700; color: #fff; line-height: 1.15; margin-bottom: 6px; }
+.hero-title em { font-style: normal; color: var(--gold); }
+.hero-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+.hero-quote { border-left: 3px solid var(--gold); padding: 14px 20px; background: rgba(201,168,76,0.05); border-radius: 0 8px 8px 0; max-width: 600px; }
+.hero-quote p { font-family: Georgia, serif; font-size: 16px; color: var(--gold2); font-style: italic; margin-bottom: 3px; line-height: 1.5; }
+.hero-quote span { font-size: 12px; color: var(--muted); }
+
+.content { max-width: 820px; padding: 36px 48px 80px; }
+.section { display: none; }
+.section.active { display: block; animation: fadeUp 0.25s ease; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.pg-num { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+.pg-title { font-family: Georgia, serif; font-size: 30px; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 4px; }
+.pg-title em { font-style: normal; color: var(--gold); }
+.pg-desc { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.metric { background: var(--d2); border: 1px solid var(--border); border-radius: 10px; padding: 18px 16px; transition: all 0.2s; }
+.metric:hover { border-color: var(--border2); transform: translateY(-2px); }
+.m-icon { font-size: 22px; margin-bottom: 10px; }
+.m-val { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+.m-lbl { font-size: 11px; color: var(--muted); }
+
+.card { background: var(--d2); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 14px; transition: border-color 0.2s; }
+.card:hover { border-color: var(--border2); }
+.ct { font-size: 11px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.cl { list-style: none; }
+.cl li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 13px; color: var(--muted); }
+.cl li:last-child { border-bottom: none; }
+.ci { flex-shrink: 0; margin-top: 1px; }
+
+.badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; }
+.bg { background: var(--gold3); color: var(--gold); border: 1px solid var(--border2); }
+
+.hl { background: rgba(201,168,76,0.05); border: 1px solid var(--border2); border-left: 3px solid var(--gold); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 22px 0; }
+.hl p { font-family: Georgia, serif; font-size: 17px; color: var(--gold2); font-style: italic; margin-bottom: 4px; }
+.hl span { font-size: 12px; color: var(--muted); }
+
+.step { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.step:last-child { border-bottom: none; }
+.sn { width: 28px; height: 28px; border-radius: 50%; background: var(--gold3); border: 1px solid var(--border2); color: var(--gold); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.step h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.step p { font-size: 12px; color: var(--muted); }
+
+.acc { margin-bottom: 8px; }
+.acc-h { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--d2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.15s; user-select: none; }
+.acc.open .acc-h { border-color: var(--border2); border-bottom-left-radius: 0; border-bottom-right-radius: 0; background: var(--d3); }
+.acc-h:hover { background: var(--d3); }
+.acc-tag { font-size: 9px; font-weight: 700; color: var(--gold); background: var(--gold3); border: 1px solid var(--border2); border-radius: 4px; padding: 2px 7px; flex-shrink: 0; }
+.acc-ic { width: 32px; height: 32px; border-radius: 7px; background: var(--d3); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.acc-ti { font-size: 14px; font-weight: 600; color: var(--text); }
+.acc-me { font-size: 11px; color: var(--dim); margin-top: 2px; }
+.acc-ch { color: var(--dim); font-size: 13px; transition: transform 0.25s; }
+.acc.open .acc-ch { transform: rotate(180deg); color: var(--gold); }
+.acc-b { overflow: hidden; max-height: 0; background: var(--d2); border: 1px solid var(--border2); border-top: none; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; transition: max-height 0.35s ease; }
+.acc.open .acc-b { max-height: 2000px; }
+.acc-in { padding: 16px 18px; }
+
+.arrows { display: flex; gap: 10px; margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--border); }
+.ab { flex: 1; display: flex; align-items: center; gap: 10px; background: var(--d2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: all 0.15s; text-align: left; }
+.ab:hover { background: var(--d3); border-color: var(--border2); }
+.ab .ai { font-size: 16px; color: var(--gold); flex-shrink: 0; }
+.al { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--dim); margin-bottom: 2px; }
+.an { font-size: 12px; font-weight: 500; color: var(--muted); }
+
+.footer { border-top: 1px solid var(--border); padding: 18px 48px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--dim); }
+.footer em { color: var(--gold); font-style: normal; }
+
+@media (max-width: 860px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .topbar { display: flex; }
+  .gbar { top: 52px; }
+  .main { margin-left: 0; padding-top: 52px; }
+  .hero { padding: 24px 20px; }
+  .hero-title { font-size: 26px; }
+  .content { padding: 24px 16px 60px; }
+  .pg-title { font-size: 24px; }
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .g2 { grid-template-columns: 1fr; }
+  .footer { padding: 14px 16px; flex-direction: column; gap: 4px; }
+  .card { padding: 16px; }
+}
+
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: #fff !important; color: #111 !important; }
+  .sidebar, .topbar, .gbar, .overlay, .arrows, .print-btn { display: none !important; }
+  .main { margin-left: 0 !important; }
+  .hero { background: #faf8f4 !important; border-bottom: 2px solid #c9a84c !important; }
+  .hero-title { color: #111 !important; }
+  .section { display: block !important; page-break-before: always; }
+  .card { background: #faf8f4 !important; border-color: #ddd !important; }
+  .content { padding: 20px 24px !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="gbar" id="gbar"></div>
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <h2>Soma Prime</h2>
+    <div class="sb-tagline">Manual do Setor de Qualidade</div>
+  </div>
+
+  <nav class="sb-nav">
+    <div class="sb-nav-label">Módulos</div>
+    <button class="sb-btn active" data-id="missao" onclick="go('missao')">
+      <span class="sb-icon">🎯</span>
+      <div><span class="sb-num">01</span><span class="sb-name">Missão</span></div>
+    </button>
+    <button class="sb-btn" data-id="pilares" onclick="go('pilares')">
+      <span class="sb-icon">🔱</span>
+      <div><span class="sb-num">02</span><span class="sb-name">Os 4 Pilares</span></div>
+    </button>
+    <button class="sb-btn" data-id="processos" onclick="go('processos')">
+      <span class="sb-icon">⚙️</span>
+      <div><span class="sb-num">03</span><span class="sb-name">Processos</span></div>
+    </button>
+    <button class="sb-btn" data-id="cliente" onclick="go('cliente')">
+      <span class="sb-icon">👥</span>
+      <div><span class="sb-num">04</span><span class="sb-name">Escuta do Cliente</span></div>
+    </button>
+    <button class="sb-btn" data-id="escalacao" onclick="go('escalacao')">
+      <span class="sb-icon">⬆️</span>
+      <div><span class="sb-num">05</span><span class="sb-name">Escalação</span></div>
+    </button>
+    <button class="sb-btn" data-id="indicadores" onclick="go('indicadores')">
+      <span class="sb-icon">📊</span>
+      <div><span class="sb-num">06</span><span class="sb-name">Indicadores</span></div>
+    </button>
+    <button class="sb-btn" data-id="manifesto" onclick="go('manifesto')">
+      <span class="sb-icon">✨</span>
+      <div><span class="sb-num">07</span><span class="sb-name">Manifesto</span></div>
+    </button>
+  </nav>
+
+  <div class="sb-progress">
+    <div style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">Progresso</div>
+    <div class="sb-prog-bar"><div class="sb-prog-fill" id="sb-fill"></div></div>
+    <div class="sb-prog-text"><span id="sb-txt">1</span> de 7 módulos</div>
+  </div>
+
+  <div class="sb-footer">
+    <button class="print-btn" onclick="window.print()">🖨 Imprimir Manual</button>
+  </div>
+</aside>
+
+<div class="topbar">
+  <button class="menu-btn" onclick="openMenu()">☰</button>
+  <div class="tb-title" id="tb-title">Missão</div>
+</div>
+
+<div class="main">
+  <div class="hero">
+    <div class="hero-eyebrow">Soma Prime · Padrão de Excelência</div>
+    <h1 class="hero-title">Manual do <em>Setor</em><br>de Qualidade</h1>
+    <p class="hero-sub">Escuta ativa · Melhoria contínua · Excelência em relacionamento</p>
+    <div class="hero-quote">
+      <p>"Qualidade não é apontar erros. É proteger o cliente, fortalecer a Soma e transformar falhas em evolução."</p>
+      <span>Você é a voz do cliente dentro da Soma Prime.</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+<!-- 01 — MISSÃO -->
+<div id="missao" class="section active">
+  <div class="pg-num">01 — Missão e Propósito</div>
+  <h2 class="pg-title">Por que o setor de <em>qualidade existe</em></h2>
+  <p class="pg-desc">A razão de ser, o foco e o impacto esperado.</p>
+  
+  <div class="metrics">
+    <div class="metric"><div class="m-icon">👂</div><div class="m-val">100<span style="font-size:13px">%</span></div><div class="m-lbl">ouvidos</div></div>
+    <div class="metric"><div class="m-icon">🎯</div><div class="m-val">1 <span style="font-size:13px">foco</span></div><div class="m-lbl">cliente sempre</div></div>
+    <div class="metric"><div class="m-icon">⚡</div><div class="m-val">0</div><div class="m-lbl">sem retorno</div></div>
+    <div class="metric"><div class="m-icon">📈</div><div class="m-val">∞</div><div class="m-lbl">evolução</div></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">🎯 Missão Central</div>
+    <p style="font-size:14px;color:var(--muted);line-height:1.75">Garantir que <strong style="color:var(--text)">cada cliente da Soma se sinta ouvido, cuidado e respeitado</strong>. O Setor de Qualidade é o elo entre a percepção do cliente e a evolução interna — transformando feedback em ação prática de melhoria.</p>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="ct">🔍 O setor funciona como</div>
+      <ul class="cl">
+        <li><span class="ci" style="color:var(--gold)">◆</span>Ouvidoria estratégica do cliente</li>
+        <li><span class="ci" style="color:var(--gold)">◆</span>Radar de insatisfação silenciosa</li>
+        <li><span class="ci" style="color:var(--gold)">◆</span>Ponte entre cliente e operação</li>
+        <li><span class="ci" style="color:var(--gold)">◆</span>Agente de melhoria contínua</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="ct">✅ O setor garante</div>
+      <ul class="cl">
+        <li><span class="ci" style="color:var(--green)">✓</span>Nenhum cliente sem escuta</li>
+        <li><span class="ci" style="color:var(--green)">✓</span>Problemas rastreados e resolvidos</li>
+        <li><span class="ci" style="color:var(--green)">✓</span>Feedback convertido em processo</li>
+        <li><span class="ci" style="color:var(--green)">✓</span>Retenção através do cuidado</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="hl">
+    <p>"Quem escuta antes, corrige antes. Quem corrige antes, retém mais."</p>
+    <span>O Setor de Qualidade funciona como um radar de risco — detectando insatisfações antes que virem cancelamentos.</span>
+  </div>
+
+  <div class="arrows">
+    <span style="flex:1"></span>
+    <button class="ab" style="flex-direction:row-reverse" onclick="go('pilares')">
+      <span class="ai">→</span>
+      <div><span class="al">Próximo</span><span class="an">Os 4 Pilares</span></div>
+    </button>
+  </div>
+</div>
+
+<!-- 02 — OS 4 PILARES -->
+<div id="pilares" class="section">
+  <div class="pg-num">02 — Os 4 Pilares</div>
+  <h2 class="pg-title">Como o setor se <em>estrutura</em></h2>
+  <p class="pg-desc">Os 4 pilares de atuação do Setor de Qualidade.</p>
+
+  <div class="acc open" id="p1">
+    <div class="acc-h" onclick="tog('p1')">
+      <span class="acc-tag">Pilar 1</span>
+      <span class="acc-ic">👂</span>
+      <div style="flex:1">
+        <div class="acc-ti">Escuta Ativa</div>
+        <div class="acc-me">Ouvir com profundidade</div>
+      </div>
+      <span class="acc-ch">▾</span>
+    </div>
+    <div class="acc-b">
+      <div class="acc-in">
+        <p style="margin-bottom:12px;color:var(--muted)"><strong style="color:var(--text)">Foco:</strong> Entender a percepção real do cliente — sem defesa, sem justificativa, sem julgamento.</p>
+        <p style="margin-bottom:12px;color:var(--muted)"><strong style="color:var(--text)">Como:</strong> Contatos periódicos para descubrir insatisfações que o cliente sente mas ainda não falou espontaneamente.</p>
+        <p style="color:var(--muted);font-style:italic">Intencionalidade: A escuta não cumpre protocolo. Ela revela o que o cliente muitas vezes não consegue expressar.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc" id="p2">
+    <div class="acc-h" onclick="tog('p2')">
+      <span class="acc-tag">Pilar 2</span>
+      <span class="acc-ic">💬</span>
+      <div style="flex:1">
+        <div class="acc-ti">Qualidade da Comunicação</div>
+        <div class="acc-me">Reduzir ruídos e retrabalhos</div>
+      </div>
+      <span class="acc-ch">▾</span>
+    </div>
+    <div class="acc-b">
+      <div class="acc-in">
+        <p style="margin-bottom:12px;color:var(--muted)"><strong style="color:var(--text)">Foco:</strong> Mapear falhas de comunicação, demoras de retorno, promessas não cumpridas.</p>
+        <p style="margin-bottom:12px;color:var(--muted)"><strong style="color:var(--text)">Como:</strong> Rastrear reclamações recorrentes, identificar quais departamentos aparecem mais, encontrar a causa raiz.</p>
+        <p style="color:var(--muted);font-style:italic">Intencionalidade: Erro tratado vira processo. Erro ignorado vira perda.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc" id="p3">
+    <div class="acc-h" onclick="tog('p3')">
+      <span class="acc-tag">Pilar 3</span>
+      <span class="acc-ic">🗣️</span>
+      <div style="flex:1">
+        <div class="acc-ti">Voz do Cliente</div>
+        <div class="acc-me">Representar internamente</div>
+      </div>
+      <span class="acc-ch">▾</span>
+    </div>
+    <div class="acc-b">
+      <div class="acc-in">
+        <p style="margin-bottom:12px;color:var(--muted)"><strong style="color:var(--text)">Foco:</strong> Criar ficha técnica para cada cliente, registrando histórico, preferências, expectativas.</p>
+        <p style="margin-bottom:12px;color:var(--muted)"><strong style="color:var(--text)">Como:</strong> Cada contato gera registro com perfil, demandas, pontos positivos, pontos de melhoria, riscos.</p>
+        <p style="color:var(--muted);font-style:italic">Intencionalidade: A Soma não pode depender apenas da memória das pessoas. O relacionamento vira dado, histórico, inteligência.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc" id="p4">
+    <div class="acc-h" onclick="tog('p4')">
+      <span class="acc-tag">Pilar 4</span>
+      <span class="acc-ic">🛡️</span>
+      <div style="flex:1">
+        <div class="acc-ti">Prevenção de Cancelamentos</div>
+        <div class="acc-me">Identificar sinais antes da crise</div>
+      </div>
+      <span class="acc-ch">▾</span>
+    </div>
+    <div class="acc-b">
+      <div class="acc-in">
+        <p style="margin-bottom:12px;color:var(--muted)"><strong style="color:var(--text)">Foco:</strong> Detectar insatisfação antes que o cliente peça cancelamento.</p>
+        <p style="margin-bottom:12px;color:var(--muted)"><strong style="color:var(--text)">Como:</strong> Monitorar sinais como cliente frio, reclamações repetidas, comparação de preço, falta de percepção de valor.</p>
+        <p style="color:var(--muted);font-style:italic">Intencionalidade: O cancelamento não começa no dia do pedido. Começa quando o cliente deixa de se sentir cuidado.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="hl" style="margin-top:24px">
+    <p>"Os 4 pilares funcionam juntos: escuta identifica, comunicação melhora, voz do cliente registra, prevenção protege."</p>
+  </div>
+
+  <div class="arrows">
+    <button class="ab" onclick="go('missao')">
+      <span class="ai">←</span>
+      <div><span class="al">Anterior</span><span class="an">Missão</span></div>
+    </button>
+    <button class="ab" style="flex-direction:row-reverse" onclick="go('processos')">
+      <span class="ai">→</span>
+      <div><span class="al">Próximo</span><span class="an">Processos</span></div>
+    </button>
+  </div>
+</div>
+
+<!-- 03 — PROCESSOS -->
+<div id="processos" class="section">
+  <div class="pg-num">03 — Processos Diários</div>
+  <h2 class="pg-title">Como o setor <em>funciona</em></h2>
+  <p class="pg-desc">Rotina, fluxo e responsabilidades.</p>
+
+  <div class="card">
+    <div class="ct">☀️ Rotina diária obrigatória</div>
+    <div class="step">
+      <div class="sn">1</div>
+      <div>
+        <h4>Revisar pendências</h4>
+        <p>O que ficou aberto? Qual é o status? Precisa escalar?</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="sn">2</div>
+      <div>
+        <h4>Ouvir clientes</h4>
+        <p>Ligações ou contatos agendados para feedback contínuo.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="sn">3</div>
+      <div>
+        <h4>Registrar tudo</h4>
+        <p>Ficha técnica atualizada, feedback classificado, ação definida.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="sn">4</div>
+      <div>
+        <h4>Encaminhar demandas</h4>
+        <p>Qual departamento? Qual urgência? Qual prazo?</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="sn">5</div>
+      <div>
+        <h4>Acompanhar soluções</h4>
+        <p>Cobrar interno, manter cliente informado, garantir retorno.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="ct">📋 Fluxo de um feedback</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px"><strong style="color:var(--text)">Cliente fala</strong> → Setor escuta e registra</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px"><strong style="color:var(--text)">Qualidade classifica</strong> → Urgência, tipo, departamento</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px"><strong style="color:var(--text)">Qualidade encaminha</strong> → Responsável recebe com clareza</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px"><strong style="color:var(--text)">Responsável responde</strong> → Causa, solução, prazo</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px"><strong style="color:var(--text)">Qualidade acompanha</strong> → Confere execução, valida solução</p>
+    <p style="font-size:13px;color:var(--muted)"><strong style="color:var(--text)">Cliente recebe retorno</strong> → Fechamento da demanda</p>
+  </div>
+
+  <div class="arrows">
+    <button class="ab" onclick="go('pilares')">
+      <span class="ai">←</span>
+      <div><span class="al">Anterior</span><span class="an">Os 4 Pilares</span></div>
+    </button>
+    <button class="ab" style="flex-direction:row-reverse" onclick="go('cliente')">
+      <span class="ai">→</span>
+      <div><span class="al">Próximo</span><span class="an">Escuta do Cliente</span></div>
+    </button>
+  </div>
+</div>
+
+<!-- 04 — ESCUTA DO CLIENTE -->
+<div id="cliente" class="section">
+  <div class="pg-num">04 — Escuta Ativa do Cliente</div>
+  <h2 class="pg-title">Como <em>ouvir</em> bem</h2>
+  <p class="pg-desc">Postura, perguntas e abordagem.</p>
+
+  <div class="card">
+    <div class="ct">🎯 Postura na escuta</div>
+    <ul class="cl">
+      <li><span class="ci" style="color:var(--gold)">◆</span>Ouça sem defesa</li>
+      <li><span class="ci" style="color:var(--gold)">◆</span>Ouça sem justificativa</li>
+      <li><span class="ci" style="color:var(--gold)">◆</span>Ouça com empatia</li>
+      <li><span class="ci" style="color:var(--gold)">◆</span>Ouça para entender, não para responder</li>
+      <li><span class="ci" style="color:var(--gold)">◆</span>Ouça o que não foi dito</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="ct">❓ Perguntas-chave para cada contato</div>
+    <ul class="cl">
+      <li><span class="ci" style="color:var(--gold)">1</span>Como você avalia sua experiência com a Soma Prime?</li>
+      <li><span class="ci" style="color:var(--gold)">2</span>O que podemos melhorar no atendimento ou comunicação?</li>
+      <li><span class="ci" style="color:var(--gold)">3</span>O que você espera da Soma nos próximos meses?</li>
+      <li><span class="ci" style="color:var(--gold)">4</span>Existe algo que a gente deveria estar fazendo e não está?</li>
+    </ul>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="ct">💬 Como responder em situações difíceis</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:10px"><strong style="color:var(--text)">Se reclamar:</strong> "Obrigado por compartilhar. Vou registrar e cuidar pessoalmente disso."</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:10px"><strong style="color:var(--text)">Se reclamar muito:</strong> "Entendo a situação. Vou revisar internamente e te retorno com um plano."</div>
+    <div style="font-size:13px;color:var(--muted)"><strong style="color:var(--text)">Se não responder:</strong> "Mesmo que hoje não tenha ponto específico, esse canal sempre está aberto."</div>
+  </div>
+
+  <div class="hl">
+    <p>"A melhor pergunta é aquela que faz o cliente se sentir ouvido — não inspecionado."</p>
+  </div>
+
+  <div class="arrows">
+    <button class="ab" onclick="go('processos')">
+      <span class="ai">←</span>
+      <div><span class="al">Anterior</span><span class="an">Processos</span></div>
+    </button>
+    <button class="ab" style="flex-direction:row-reverse" onclick="go('escalacao')">
+      <span class="ai">→</span>
+      <div><span class="al">Próximo</span><span class="an">Escalação</span></div>
+    </button>
+  </div>
+</div>
+
+<!-- 05 — ESCALAÇÃO -->
+<div id="escalacao" class="section">
+  <div class="pg-num">05 — Escalação e Urgência</div>
+  <h2 class="pg-title">Quando e como <em>elevar</em></h2>
+  <p class="pg-desc">Níveis de prioridade e fluxo de escalação.</p>
+
+  <div class="metrics" style="margin-bottom:24px">
+    <div class="metric"><div class="m-icon">🔴</div><div class="m-val">Imediato</div><div class="m-lbl">prioridade alta</div></div>
+    <div class="metric"><div class="m-icon">🟠</div><div class="m-val">48h</div><div class="m-lbl">prioridade média</div></div>
+    <div class="metric"><div class="m-icon">🟡</div><div class="m-val">5 dias</div><div class="m-lbl">prioridade baixa</div></div>
+    <div class="metric"><div class="m-icon">⚙️</div><div class="m-val">Contínua</div><div class="m-lbl">operacional</div></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">🔴 Prioridade Alta (imediato)</div>
+    <ul class="cl">
+      <li><span class="ci" style="color:var(--red)">⚠️</span>Risco de cancelamento</li>
+      <li><span class="ci" style="color:var(--red)">⚠️</span>Erro com impacto financeiro</li>
+      <li><span class="ci" style="color:var(--red)">⚠️</span>Cliente premium insatisfeito</li>
+      <li><span class="ci" style="color:var(--red)">⚠️</span>Problema na folha ou rescisão urgente</li>
+      <li><span class="ci" style="color:var(--red)">⚠️</span>Cliente sem retorno há dias</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="ct">🟠 Prioridade Média (até 48h)</div>
+    <ul class="cl">
+      <li><span class="ci" style="color:var(--amber)">•</span>Reclamação importante</li>
+      <li><span class="ci" style="color:var(--amber)">•</span>Falha de comunicação</li>
+      <li><span class="ci" style="color:var(--amber)">•</span>Demora de retorno</li>
+      <li><span class="ci" style="color:var(--amber)">•</span>Problema que se repete</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="ct">🟡 Prioridade Baixa (até 5 dias)</div>
+    <ul class="cl">
+      <li><span class="ci" style="color:var(--dim)">◇</span>Sugestão de melhoria</li>
+      <li><span class="ci" style="color:var(--dim)">◇</span>Observação sem urgência</li>
+      <li><span class="ci" style="color:var(--dim)">◇</span>Ajuste de processo interno</li>
+    </ul>
+  </div>
+
+  <div class="arrows">
+    <button class="ab" onclick="go('cliente')">
+      <span class="ai">←</span>
+      <div><span class="al">Anterior</span><span class="an">Escuta</span></div>
+    </button>
+    <button class="ab" style="flex-direction:row-reverse" onclick="go('indicadores')">
+      <span class="ai">→</span>
+      <div><span class="al">Próximo</span><span class="an">Indicadores</span></div>
+    </button>
+  </div>
+</div>
+
+<!-- 06 — INDICADORES -->
+<div id="indicadores" class="section">
+  <div class="pg-num">06 — Indicadores de Impacto</div>
+  <h2 class="pg-title">O que se <em>mede</em></h2>
+  <p class="pg-desc">Métricas que mostram se o setor está funcionando.</p>
+
+  <div class="card">
+    <div class="ct">📊 Indicadores principais</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
+      <div style="border-bottom:1px solid rgba(255,255,255,0.04);padding:9px 0"><span style="color:var(--muted)">Clientes contatados</span><div style="font-weight:600;color:var(--text)">por mês</div></div>
+      <div style="border-bottom:1px solid rgba(255,255,255,0.04);padding:9px 0"><span style="color:var(--muted)">Reclamações registradas</span><div style="font-weight:600;color:var(--text)">volume de problemas</div></div>
+      <div style="border-bottom:1px solid rgba(255,255,255,0.04);padding:9px 0"><span style="color:var(--muted)">Resolvidas</span><div style="font-weight:600;color:var(--text)">% de efetividade</div></div>
+      <div style="border-bottom:1px solid rgba(255,255,255,0.04);padding:9px 0"><span style="color:var(--muted)">Tempo de solução</span><div style="font-weight:600;color:var(--text)">média em dias</div></div>
+      <div style="border-bottom:1px solid rgba(255,255,255,0.04);padding:9px 0"><span style="color:var(--muted)">Em risco</span><div style="font-weight:600;color:var(--text)">prevenção ativa</div></div>
+      <div style="border-bottom:1px solid rgba(255,255,255,0.04);padding:9px 0"><span style="color:var(--muted)">Cancelamentos revertidos</span><div style="font-weight:600;color:var(--text)">impacto financeiro</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="ct">🎯 Ciclo de contato por cliente</div>
+    <ul class="cl">
+      <li><span class="ci" style="color:var(--gold)">👑</span><strong style="color:var(--text)">Cliente premium:</strong> a cada 60 dias</li>
+      <li><span class="ci" style="color:var(--gold)">⭐</span><strong style="color:var(--text)">Cliente estratégico:</strong> a cada 90 dias</li>
+      <li><span class="ci" style="color:var(--gold)">🔔</span><strong style="color:var(--text)">Com problema recente:</strong> a cada 30 dias</li>
+      <li><span class="ci" style="color:var(--gold)">🆕</span><strong style="color:var(--text)">Cliente novo:</strong> após 30 dias da implantação</li>
+      <li><span class="ci" style="color:var(--gold)">⚠️</span><strong style="color:var(--text)">Em risco:</strong> acompanhamento contínuo</li>
+    </ul>
+  </div>
+
+  <div class="arrows">
+    <button class="ab" onclick="go('escalacao')">
+      <span class="ai">←</span>
+      <div><span class="al">Anterior</span><span class="an">Escalação</span></div>
+    </button>
+    <button class="ab" style="flex-direction:row-reverse" onclick="go('manifesto')">
+      <span class="ai">→</span>
+      <div><span class="al">Próximo</span><span class="an">Manifesto</span></div>
+    </button>
+  </div>
+</div>
+
+<!-- 07 — MANIFESTO -->
+<div id="manifesto" class="section">
+  <div class="pg-num">07 — Manifesto do Setor</div>
+  <h2 class="pg-title">Por que fazemos <em>o que fazemos</em></h2>
+  <p class="pg-desc">Os valores e princípios que nos guiam.</p>
+
+  <div class="card" style="border-left:3px solid var(--gold);padding:24px">
+    <p style="font-family:Georgia,serif;font-size:18px;color:var(--gold2);font-style:italic;margin-bottom:16px;line-height:1.6">
+      "O Setor de Qualidade da Soma Prime nasce para cuidar daquilo que sustenta qualquer empresa forte: confiança, entrega e relacionamento."
+    </p>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:12px">Nosso papel é <strong style="color:var(--text)">ouvir com atenção, agir com responsabilidade</strong> e transformar cada feedback em evolução.</p>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:12px">Não buscamos culpados. <strong style="color:var(--text)">Buscamos causas.</strong></p>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:12px">Não queremos apenas clientes satisfeitos. <strong style="color:var(--text)">Queremos clientes seguros, acompanhados e encantados.</strong></p>
+    <p style="font-size:14px;color:var(--muted)">A qualidade é o elo entre o que o cliente sente, o que a Soma entrega e o padrão de excelência que construímos juntos.</p>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <div class="ct">✨ Frases que nos norteiam</div>
+    <ul class="cl">
+      <li><span class="ci" style="color:var(--gold)">⚡</span>"Quem escuta antes, corrige antes. Quem corrige antes, retém mais."</li>
+      <li><span class="ci" style="color:var(--gold)">⚡</span>"Erro tratado vira processo. Erro ignorado vira perda."</li>
+      <li><span class="ci" style="color:var(--gold)">⚡</span>"Não apontamos erros. Transformamos falhas em evolução."</li>
+      <li><span class="ci" style="color:var(--gold)">⚡</span>"Cliente ouvido é cliente mais seguro."</li>
+      <li><span class="ci" style="color:var(--gold)">⚡</span>"Excelência não é ausência de erro. É velocidade, responsabilidade e maturidade para corrigir."</li>
+    </ul>
+  </div>
+
+  <div class="arrows">
+    <button class="ab" onclick="go('indicadores')">
+      <span class="ai">←</span>
+      <div><span class="al">Anterior</span><span class="an">Indicadores</span></div>
+    </button>
+    <span style="flex:1"></span>
+  </div>
+</div>
+
+  </div>
+
+  <footer class="footer">
+    <em>Soma Prime</em> · Manual do Setor de Qualidade · Uso interno
+    <span style="color:var(--dim)">Responsável: [seu nome aqui]</span>
+  </footer>
+</div>
+
+<script>
+var IDS=['missao','pilares','processos','cliente','escalacao','indicadores','manifesto'];
+var NAMES=['Missão','Os 4 Pilares','Processos','Escuta do Cliente','Escalação','Indicadores','Manifesto'];
+
+function go(id){
+  for(var i=0;i<IDS.length;i++){document.getElementById(IDS[i]).classList.remove('active');}
+  document.querySelectorAll('.sb-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  var btn=document.querySelector('[data-id="'+id+'"]');
+  if(btn) btn.classList.add('active');
+  var idx=IDS.indexOf(id);
+  var pct=Math.round((idx+1)/IDS.length*100);
+  document.getElementById('gbar').style.width=pct+'%';
+  document.getElementById('sb-fill').style.width=pct+'%';
+  document.getElementById('sb-txt').textContent=(idx+1);
+  if(document.getElementById('tb-title')) document.getElementById('tb-title').textContent=NAMES[idx];
+  closeMenu();
+  window.scrollTo(0,0);
+}
+
+function openMenu(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('on');
+}
+
+function closeMenu(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('on');
+}
+
+function tog(id){document.getElementById(id).classList.toggle('open');}
+</script>
+
+</body>
+</html>
