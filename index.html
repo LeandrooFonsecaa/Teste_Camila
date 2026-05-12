@@ -135,6 +135,10 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
 .al { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--dim); margin-bottom: 2px; }
 .an { font-size: 12px; font-weight: 500; color: var(--muted); }
 
+.fala { background: var(--d3); border-left: 3px solid var(--gold); padding: 12px 14px; margin: 12px 0; border-radius: 0 6px 6px 0; }
+.fala-tag { font-size: 9px; color: var(--gold); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+.fala-txt { font-size: 13px; color: var(--text); font-style: italic; }
+
 .footer { border-top: 1px solid var(--border); padding: 18px 48px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--dim); }
 .footer em { color: var(--gold); font-style: normal; }
 
@@ -196,24 +200,28 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
       <span class="sb-icon">👥</span>
       <div><span class="sb-num">04</span><span class="sb-name">Escuta do Cliente</span></div>
     </button>
+    <button class="sb-btn" data-id="call" onclick="go('call')">
+      <span class="sb-icon">📞</span>
+      <div><span class="sb-num">05</span><span class="sb-name">Script da Call</span></div>
+    </button>
     <button class="sb-btn" data-id="escalacao" onclick="go('escalacao')">
       <span class="sb-icon">⬆️</span>
-      <div><span class="sb-num">05</span><span class="sb-name">Escalação</span></div>
+      <div><span class="sb-num">06</span><span class="sb-name">Escalação</span></div>
     </button>
     <button class="sb-btn" data-id="indicadores" onclick="go('indicadores')">
       <span class="sb-icon">📊</span>
-      <div><span class="sb-num">06</span><span class="sb-name">Indicadores</span></div>
+      <div><span class="sb-num">07</span><span class="sb-name">Indicadores</span></div>
     </button>
     <button class="sb-btn" data-id="manifesto" onclick="go('manifesto')">
       <span class="sb-icon">✨</span>
-      <div><span class="sb-num">07</span><span class="sb-name">Manifesto</span></div>
+      <div><span class="sb-num">08</span><span class="sb-name">Manifesto</span></div>
     </button>
   </nav>
 
   <div class="sb-progress">
     <div style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">Progresso</div>
     <div class="sb-prog-bar"><div class="sb-prog-fill" id="sb-fill"></div></div>
-    <div class="sb-prog-text"><span id="sb-txt">1</span> de 7 módulos</div>
+    <div class="sb-prog-text"><span id="sb-txt">1</span> de 8 módulos</div>
   </div>
 
   <div class="sb-footer">
@@ -311,7 +319,7 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
     <div class="acc-b">
       <div class="acc-in">
         <p style="margin-bottom:12px;color:var(--muted)"><strong style="color:var(--text)">Foco:</strong> Entender a percepção real do cliente — sem defesa, sem justificativa, sem julgamento.</p>
-        <p style="margin-bottom:12px;color:var(--muted)"><strong style="color:var(--text)">Como:</strong> Contatos periódicos para descubrir insatisfações que o cliente sente mas ainda não falou espontaneamente.</p>
+        <p style="margin-bottom:12px;color:var(--muted)"><strong style="color:var(--text)">Como:</strong> Contatos periódicos para descobrir insatisfações que o cliente sente mas ainda não falou espontaneamente.</p>
         <p style="color:var(--muted);font-style:italic">Intencionalidade: A escuta não cumpre protocolo. Ela revela o que o cliente muitas vezes não consegue expressar.</p>
       </div>
     </div>
@@ -500,6 +508,79 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
       <span class="ai">←</span>
       <div><span class="al">Anterior</span><span class="an">Processos</span></div>
     </button>
+    <button class="ab" style="flex-direction:row-reverse" onclick="go('call')">
+      <span class="ai">→</span>
+      <div><span class="al">Próximo</span><span class="an">Script da Call</span></div>
+    </button>
+  </div>
+</div>
+
+<!-- 05 — SCRIPT DA CALL -->
+<div id="call" class="section">
+  <div class="pg-num">05 — Script de Apresentação</div>
+  <h2 class="pg-title">Roteiro para a <em>primeira call</em></h2>
+  <p class="pg-desc">Passo a passo para apresentar o Setor de Qualidade ao cliente.</p>
+
+  <div class="card">
+    <div class="ct">📞 Estrutura da Call</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px"><strong style="color:var(--text)">Tempo estimado:</strong> 10 a 15 minutos</p>
+    <p style="font-size:13px;color:var(--muted)"><strong style="color:var(--text)">Objetivo:</strong> Apresentar o setor, gerar confiança e coletar feedback inicial sobre experiência do cliente.</p>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="ct">🎯 Passo 1: Abertura e Apresentação</div>
+    <div class="fala">
+      <div class="fala-tag">Você (Setor de Qualidade)</div>
+      <div class="fala-txt">"Olá, [nome do cliente]. Tudo bem? Aqui é [seu nome] do Setor de Qualidade da Soma Prime. Estamos iniciando um trabalho especial para ouvir melhor nossos clientes, melhorar nossa comunicação e garantir que a experiência de vocês com a Soma seja cada vez mais estratégica e segura."</div>
+    </div>
+    <p style="font-size:12px;color:var(--dim);margin-top:10px"><span style="color:var(--gold)">💡</span> Deixe claro que é um novo serviço pensado especificamente para melhorar o relacionamento.</p>
+  </div>
+
+  <div class="card">
+    <div class="ct">🎯 Passo 2: Contextualizar e Aquecer</div>
+    <div class="fala">
+      <div class="fala-tag">Você</div>
+      <div class="fala-txt">"Gostaria de tomar alguns minutos para entender como você enxerga nosso atendimento hoje. Sem filtro, sem julgamento. A sua percepção honesta é o que vai nos ajudar a evoluir."</div>
+    </div>
+    <p style="font-size:12px;color:var(--dim);margin-top:10px"><span style="color:var(--gold)">💡</span> A palavra-chave é "honesto". Cliente precisa saber que pode falar à vontade.</p>
+  </div>
+
+  <div class="card">
+    <div class="ct">🎯 Passo 3: Pergunta 1 — Satisfação Geral</div>
+    <div class="fala">
+      <div class="fala-tag">Você</div>
+      <div class="fala-txt">"Primeira pergunta: como você avalia sua experiência com a Soma Prime neste momento?"</div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:10px"><strong>Espere a resposta completa.</strong> Não interrompa. Anote pontos principais e ouça entre linhas.</p>
+  </div>
+
+  <div class="card">
+    <div class="ct">🎯 Passo 4: Pergunta 2 — Oportunidades de Melhoria</div>
+    <div class="fala">
+      <div class="fala-tag">Você</div>
+      <div class="fala-txt">"E o que podemos melhorar? No atendimento, na comunicação, no acompanhamento... há algo que você acredita que a gente deveria fazer diferente?"</div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:10px"><strong>Deixe espaço para silêncios.</strong> Às vezes a resposta mais honesta vem depois de uma pausa.</p>
+  </div>
+
+  <div class="card">
+    <div class="ct">✅ Fechamento da Call</div>
+    <div class="fala">
+      <div class="fala-tag">Você</div>
+      <div class="fala-txt">"Muito obrigado pelas informações. Vou registrar tudo com cuidado e, se houver qualquer ponto que a gente possa resolver, vou retornar para você com um plano. Esse canal sempre vai estar aberto para você."</div>
+    </div>
+    <p style="font-size:12px;color:var(--dim);margin-top:10px"><span style="color:var(--gold)">💡</span> Deixe claro que a relação continua e que o cliente tem um canal direto.</p>
+  </div>
+
+  <div class="hl">
+    <p>"A call não é para vender ou defender a Soma. É para ouvir. Quanto menos você fala, melhor."</p>
+  </div>
+
+  <div class="arrows">
+    <button class="ab" onclick="go('cliente')">
+      <span class="ai">←</span>
+      <div><span class="al">Anterior</span><span class="an">Escuta</span></div>
+    </button>
     <button class="ab" style="flex-direction:row-reverse" onclick="go('escalacao')">
       <span class="ai">→</span>
       <div><span class="al">Próximo</span><span class="an">Escalação</span></div>
@@ -507,9 +588,9 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
   </div>
 </div>
 
-<!-- 05 — ESCALAÇÃO -->
+<!-- 06 — ESCALAÇÃO -->
 <div id="escalacao" class="section">
-  <div class="pg-num">05 — Escalação e Urgência</div>
+  <div class="pg-num">06 — Escalação e Urgência</div>
   <h2 class="pg-title">Quando e como <em>elevar</em></h2>
   <p class="pg-desc">Níveis de prioridade e fluxo de escalação.</p>
 
@@ -551,9 +632,9 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
   </div>
 
   <div class="arrows">
-    <button class="ab" onclick="go('cliente')">
+    <button class="ab" onclick="go('call')">
       <span class="ai">←</span>
-      <div><span class="al">Anterior</span><span class="an">Escuta</span></div>
+      <div><span class="al">Anterior</span><span class="an">Script</span></div>
     </button>
     <button class="ab" style="flex-direction:row-reverse" onclick="go('indicadores')">
       <span class="ai">→</span>
@@ -562,9 +643,9 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
   </div>
 </div>
 
-<!-- 06 — INDICADORES -->
+<!-- 07 — INDICADORES -->
 <div id="indicadores" class="section">
-  <div class="pg-num">06 — Indicadores de Impacto</div>
+  <div class="pg-num">07 — Indicadores de Impacto</div>
   <h2 class="pg-title">O que se <em>mede</em></h2>
   <p class="pg-desc">Métricas que mostram se o setor está funcionando.</p>
 
@@ -603,9 +684,9 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
   </div>
 </div>
 
-<!-- 07 — MANIFESTO -->
+<!-- 08 — MANIFESTO -->
 <div id="manifesto" class="section">
-  <div class="pg-num">07 — Manifesto do Setor</div>
+  <div class="pg-num">08 — Manifesto do Setor</div>
   <h2 class="pg-title">Por que fazemos <em>o que fazemos</em></h2>
   <p class="pg-desc">Os valores e princípios que nos guiam.</p>
 
@@ -648,8 +729,8 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
 </div>
 
 <script>
-var IDS=['missao','pilares','processos','cliente','escalacao','indicadores','manifesto'];
-var NAMES=['Missão','Os 4 Pilares','Processos','Escuta do Cliente','Escalação','Indicadores','Manifesto'];
+var IDS=['missao','pilares','processos','cliente','call','escalacao','indicadores','manifesto'];
+var NAMES=['Missão','Os 4 Pilares','Processos','Escuta','Script da Call','Escalação','Indicadores','Manifesto'];
 
 function go(id){
   for(var i=0;i<IDS.length;i++){document.getElementById(IDS[i]).classList.remove('active');}
