@@ -142,6 +142,157 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
 .footer { border-top: 1px solid var(--border); padding: 18px 48px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--dim); }
 .footer em { color: var(--gold); font-style: normal; }
 
+/* ===== FICHA 360º STYLES ===== */
+.ficha-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.ficha-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.ficha-group.full {
+  grid-column: 1 / -1;
+}
+
+.ficha-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ficha-input,
+.ficha-select,
+.ficha-textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  background: var(--d3);
+  color: var(--text);
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.ficha-input:focus,
+.ficha-select:focus,
+.ficha-textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
+  background: var(--d4);
+}
+
+.ficha-textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.ficha-radio-group,
+.ficha-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ficha-radio-option,
+.ficha-checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.ficha-radio-option:hover,
+.ficha-checkbox-option:hover {
+  background: var(--d3);
+}
+
+.ficha-radio-option input,
+.ficha-checkbox-option input {
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+.ficha-checkbox-option label {
+  margin: 0;
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.ficha-btn-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ficha-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ficha-btn-save {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+  color: var(--black);
+}
+
+.ficha-btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
+}
+
+.ficha-btn-export {
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+}
+
+.ficha-btn-export:hover {
+  background: rgba(201, 168, 76, 0.1);
+}
+
+.ficha-btn-reset {
+  background: var(--red);
+  color: #fff;
+}
+
+.ficha-btn-reset:hover {
+  background: #d32f2f;
+}
+
+@media (max-width: 860px) {
+  .ficha-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ficha-btn-group {
+    flex-direction: column;
+  }
+  
+  .ficha-btn {
+    width: 100%;
+  }
+}
+
 @media (max-width: 860px) {
   .sidebar { transform: translateX(-100%); }
   .sidebar.open { transform: translateX(0); }
@@ -216,12 +367,16 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
       <span class="sb-icon">✨</span>
       <div><span class="sb-num">08</span><span class="sb-name">Manifesto</span></div>
     </button>
+    <button class="sb-btn" data-id="ficha" onclick="go('ficha')">
+      <span class="sb-icon">📋</span>
+      <div><span class="sb-num">09</span><span class="sb-name">Ficha 360º</span></div>
+    </button>
   </nav>
 
   <div class="sb-progress">
     <div style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">Progresso</div>
     <div class="sb-prog-bar"><div class="sb-prog-fill" id="sb-fill"></div></div>
-    <div class="sb-prog-text"><span id="sb-txt">1</span> de 8 módulos</div>
+    <div class="sb-prog-text"><span id="sb-txt">1</span> de 9 módulos</div>
   </div>
 
   <div class="sb-footer">
@@ -720,6 +875,236 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
   </div>
 </div>
 
+<!-- 09 — FICHA 360º DO CLIENTE -->
+<div id="ficha" class="section">
+  <div class="pg-num">09 — Ficha 360º do Cliente</div>
+  <h2 class="pg-title">Formulário de <em>Avaliação</em></h2>
+  <p class="pg-desc">Instrumento de coleta de informações completas sobre o cliente.</p>
+
+  <form id="fichForm">
+    <!-- SEÇÃO 01: IDENTIFICAÇÃO -->
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="ct">🏢 Identificação do Cliente</div>
+      <div class="ficha-grid">
+        <div class="ficha-group">
+          <label class="ficha-label">Razão Social</label>
+          <input type="text" class="ficha-input" name="razaoSocial">
+        </div>
+        <div class="ficha-group">
+          <label class="ficha-label">CNPJ</label>
+          <input type="text" class="ficha-input" name="cnpj" placeholder="00.000.000/0000-00">
+        </div>
+        <div class="ficha-group">
+          <label class="ficha-label">Ticket Mensal (R$)</label>
+          <input type="number" class="ficha-input" name="ticketMensal" min="0" step="0.01">
+        </div>
+        <div class="ficha-group">
+          <label class="ficha-label">Porte</label>
+          <select class="ficha-select" name="porte">
+            <option value="">Selecione...</option>
+            <option value="MEI">MEI</option>
+            <option value="PE">Pequena</option>
+            <option value="ME">Média</option>
+            <option value="GE">Grande</option>
+          </select>
+        </div>
+        <div class="ficha-group">
+          <label class="ficha-label">Data do Contato</label>
+          <input type="date" class="ficha-input" name="dataContato">
+        </div>
+        <div class="ficha-group">
+          <label class="ficha-label">Responsável</label>
+          <input type="text" class="ficha-input" name="responsavel">
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 02: CANAL PREFERIDO -->
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="ct">📞 Preferências de Comunicação</div>
+      <div class="ficha-group full" style="margin-bottom: 16px;">
+        <label class="ficha-label">Canal Preferido</label>
+        <div class="ficha-radio-group" style="flex-direction: row; flex-wrap: wrap; gap: 12px;">
+          <div class="ficha-radio-option" style="flex: 0 0 auto;">
+            <input type="radio" id="whatsapp" name="canalPreferido" value="WhatsApp">
+            <label for="whatsapp" style="margin: 0;">WhatsApp</label>
+          </div>
+          <div class="ficha-radio-option" style="flex: 0 0 auto;">
+            <input type="radio" id="ligacao" name="canalPreferido" value="Ligação">
+            <label for="ligacao" style="margin: 0;">Ligação</label>
+          </div>
+          <div class="ficha-radio-option" style="flex: 0 0 auto;">
+            <input type="radio" id="email" name="canalPreferido" value="Email">
+            <label for="email" style="margin: 0;">Email</label>
+          </div>
+          <div class="ficha-radio-option" style="flex: 0 0 auto;">
+            <input type="radio" id="call" name="canalPreferido" value="Call">
+            <label for="call" style="margin: 0;">Call</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="ficha-group full" style="margin-bottom: 16px;">
+        <label class="ficha-label">Melhor Horário</label>
+        <div class="ficha-radio-group" style="flex-direction: row; flex-wrap: wrap; gap: 12px;">
+          <div class="ficha-radio-option" style="flex: 0 0 auto;">
+            <input type="radio" id="manha" name="melhorHorario" value="Manhã">
+            <label for="manha" style="margin: 0;">Manhã</label>
+          </div>
+          <div class="ficha-radio-option" style="flex: 0 0 auto;">
+            <input type="radio" id="tarde" name="melhorHorario" value="Tarde">
+            <label for="tarde" style="margin: 0;">Tarde</label>
+          </div>
+          <div class="ficha-radio-option" style="flex: 0 0 auto;">
+            <input type="radio" id="noite" name="melhorHorario" value="Noite">
+            <label for="noite" style="margin: 0;">Noite</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 03: EXPERIÊNCIA -->
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="ct">⭐ Experiência Atual</div>
+      <div class="ficha-grid">
+        <div class="ficha-group full">
+          <label class="ficha-label">Nota Geral (0-10)</label>
+          <input type="range" class="ficha-input" name="notaGeral" min="0" max="10" value="5" style="padding: 8px 12px; height: 6px;">
+          <span class="ficha-label" style="text-transform: none; margin-top: 8px; color: var(--gold); font-size: 14px;" id="notaDisplay">5/10</span>
+        </div>
+        <div class="ficha-group full">
+          <label class="ficha-label">Pontos Positivos</label>
+          <textarea class="ficha-textarea" name="pontosPositivos" placeholder="O que está funcionando bem..."></textarea>
+        </div>
+        <div class="ficha-group full">
+          <label class="ficha-label">Pontos de Melhoria</label>
+          <textarea class="ficha-textarea" name="pontosMelhoria" placeholder="O que pode melhorar..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 04: HEALTH SCORE -->
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="ct">🚦 Health Score</div>
+      <div class="ficha-grid">
+        <div class="ficha-group full">
+          <div class="ficha-radio-group" style="flex-direction: row; flex-wrap: wrap; gap: 12px;">
+            <div class="ficha-radio-option" style="flex: 0 0 auto; border: 1px solid var(--border); padding: 10px;">
+              <input type="radio" id="saudavel" name="healthScore" value="Saudável">
+              <label for="saudavel" style="margin: 0;">✓ Saudável</label>
+            </div>
+            <div class="ficha-radio-option" style="flex: 0 0 auto; border: 1px solid var(--border); padding: 10px;">
+              <input type="radio" id="atencao" name="healthScore" value="Atenção">
+              <label for="atencao" style="margin: 0;">! Atenção</label>
+            </div>
+            <div class="ficha-radio-option" style="flex: 0 0 auto; border: 1px solid var(--border); padding: 10px;">
+              <input type="radio" id="sensivel" name="healthScore" value="Sensível">
+              <label for="sensivel" style="margin: 0;">⚡ Sensível</label>
+            </div>
+            <div class="ficha-radio-option" style="flex: 0 0 auto; border: 1px solid var(--border); padding: 10px;">
+              <input type="radio" id="risco" name="healthScore" value="Risco">
+              <label for="risco" style="margin: 0;">✕ Risco</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 05: MAPEAMENTO DE RISCO -->
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="ct">⚠️ Sinais de Risco (marque os aplicáveis)</div>
+      <div class="ficha-checkbox-group">
+        <div class="ficha-checkbox-option">
+          <input type="checkbox" id="frio" name="risco" value="Cliente frio/distante">
+          <label for="frio">Cliente frio ou distante</label>
+        </div>
+        <div class="ficha-checkbox-option">
+          <input type="checkbox" id="demora" name="risco" value="Demora ao responder">
+          <label for="demora">Demora ao responder</label>
+        </div>
+        <div class="ficha-checkbox-option">
+          <input type="checkbox" id="honorarios" name="risco" value="Questiona honorários">
+          <label for="honorarios">Questiona honorários</label>
+        </div>
+        <div class="ficha-checkbox-option">
+          <input type="checkbox" id="concorrencia" name="risco" value="Compara concorrência">
+          <label for="concorrencia">Compara concorrência</label>
+        </div>
+        <div class="ficha-checkbox-option">
+          <input type="checkbox" id="reclamacoes" name="risco" value="Reclamações recorrentes">
+          <label for="reclamacoes">Reclamações recorrentes</label>
+        </div>
+        <div class="ficha-checkbox-option">
+          <input type="checkbox" id="valor" name="risco" value="Falta percepção de valor">
+          <label for="valor">Falta percepção de valor</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 06: PLANO DE AÇÃO -->
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="ct">📝 Plano de Ação</div>
+      <div class="ficha-grid">
+        <div class="ficha-group full">
+          <label class="ficha-label">Problema Identificado</label>
+          <textarea class="ficha-textarea" name="problema" placeholder="Descrição do problema..."></textarea>
+        </div>
+        <div class="ficha-group">
+          <label class="ficha-label">Responsável</label>
+          <input type="text" class="ficha-input" name="responsavelAcao">
+        </div>
+        <div class="ficha-group">
+          <label class="ficha-label">Prazo de Solução</label>
+          <input type="date" class="ficha-input" name="prazoSolucao">
+        </div>
+        <div class="ficha-group full">
+          <label class="ficha-label">Status</label>
+          <div class="ficha-radio-group" style="flex-direction: row; flex-wrap: wrap; gap: 12px;">
+            <div class="ficha-radio-option" style="flex: 0 0 auto;">
+              <input type="radio" id="aberto" name="status" value="Aberto">
+              <label for="aberto" style="margin: 0;">Aberto</label>
+            </div>
+            <div class="ficha-radio-option" style="flex: 0 0 auto;">
+              <input type="radio" id="andamento" name="status" value="Em andamento">
+              <label for="andamento" style="margin: 0;">Em andamento</label>
+            </div>
+            <div class="ficha-radio-option" style="flex: 0 0 auto;">
+              <input type="radio" id="resolvido" name="status" value="Resolvido">
+              <label for="resolvido" style="margin: 0;">Resolvido</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 07: OBSERVAÇÕES -->
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="ct">📌 Observações Finais</div>
+      <div class="ficha-grid">
+        <div class="ficha-group full">
+          <label class="ficha-label">Notas Comportamentais e Contexto</label>
+          <textarea class="ficha-textarea" name="observacoes" placeholder="Detalhes importantes, observações comportamentais..." style="min-height: 120px;"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTÕES -->
+    <div class="ficha-btn-group">
+      <button type="button" class="ficha-btn ficha-btn-save" onclick="salvarFicha()">💾 Salvar Ficha</button>
+      <button type="button" class="ficha-btn ficha-btn-export" onclick="exportarJSON()">📊 Exportar JSON</button>
+      <button type="reset" class="ficha-btn ficha-btn-reset">🗑️ Limpar</button>
+    </div>
+  </form>
+
+  <div class="arrows">
+    <button class="ab" onclick="go('manifesto')">
+      <span class="ai">←</span>
+      <div><span class="al">Anterior</span><span class="an">Manifesto</span></div>
+    </button>
+    <span style="flex:1"></span>
+  </div>
+</div>
+
   </div>
 
   <footer class="footer">
@@ -729,8 +1114,8 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
 </div>
 
 <script>
-var IDS=['missao','pilares','processos','cliente','call','escalacao','indicadores','manifesto'];
-var NAMES=['Missão','Os 4 Pilares','Processos','Escuta','Script da Call','Escalação','Indicadores','Manifesto'];
+var IDS=['missao','pilares','processos','cliente','call','escalacao','indicadores','manifesto','ficha'];
+var NAMES=['Missão','Os 4 Pilares','Processos','Escuta','Script da Call','Escalação','Indicadores','Manifesto','Ficha 360º'];
 
 function go(id){
   for(var i=0;i<IDS.length;i++){document.getElementById(IDS[i]).classList.remove('active');}
@@ -759,6 +1144,54 @@ function closeMenu(){
 }
 
 function tog(id){document.getElementById(id).classList.toggle('open');}
+
+// ===== FICHA 360º FUNCTIONS =====
+const fichForm = document.getElementById('fichForm');
+const notaGeralInput = document.querySelector('input[name="notaGeral"]');
+
+if(notaGeralInput) {
+  notaGeralInput.addEventListener('input', function() {
+    document.getElementById('notaDisplay').textContent = this.value + '/10';
+  });
+}
+
+function salvarFicha() {
+  const formData = new FormData(fichForm);
+  const dados = Object.fromEntries(formData);
+  localStorage.setItem('ficha360', JSON.stringify(dados));
+  alert('✅ Ficha salva com sucesso!');
+}
+
+function exportarJSON() {
+  const formData = new FormData(fichForm);
+  const dados = Object.fromEntries(formData);
+  dados.dataExportacao = new Date().toLocaleString('pt-BR');
+  
+  const json = JSON.stringify(dados, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Ficha360_${dados.razaoSocial || 'Cliente'}_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Carregar dados salvos ao iniciar
+window.addEventListener('DOMContentLoaded', function() {
+  const dados = localStorage.getItem('ficha360');
+  if(dados) {
+    try {
+      const parsed = JSON.parse(dados);
+      Object.keys(parsed).forEach(key => {
+        const campo = fichForm.elements[key];
+        if(campo) campo.value = parsed[key];
+      });
+    } catch(e) {
+      console.error('Erro ao carregar:', e);
+    }
+  }
+});
 </script>
 
 </body>
