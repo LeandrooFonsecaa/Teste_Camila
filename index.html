@@ -1090,8 +1090,8 @@ body { background: var(--black); color: var(--text); font-family: -apple-system,
 
     <!-- BOTÕES -->
     <div class="ficha-btn-group">
-      <button type="button" class="ficha-btn ficha-btn-save" onclick="salvarFicha()">💾 Salvar Ficha</button>
-      <button type="button" class="ficha-btn ficha-btn-export" onclick="exportarJSON()">📊 Exportar JSON</button>
+      <button type="button" class="ficha-btn ficha-btn-save" onclick="salvarFicha()">💾 Salvar na Planilha</button>
+      <button type="button" class="ficha-btn ficha-btn-export" onclick="gerarPDF()">📄 Gerar PDF</button>
       <button type="reset" class="ficha-btn ficha-btn-reset">🗑️ Limpar</button>
     </div>
   </form>
@@ -1155,26 +1155,184 @@ if(notaGeralInput) {
   });
 }
 
+// URL do Google Apps Script
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwX2gVPo--kSwAt7ko89Kfwkoz3xy6xWMx-2JebmJ_wpZiF0uf9ki3ioJCt7I4TzJom7g/exec';
+
 function salvarFicha() {
   const formData = new FormData(fichForm);
   const dados = Object.fromEntries(formData);
-  localStorage.setItem('ficha360', JSON.stringify(dados));
-  alert('✅ Ficha salva com sucesso!');
+  
+  // Mostrar loading
+  const btn = event.target;
+  const textOriginal = btn.innerText;
+  btn.innerText = '⏳ Enviando...';
+  btn.disabled = true;
+  
+  // Enviar para Google Sheets
+  fetch(WEBHOOK_URL, {
+    method: 'POST',
+    body: JSON.stringify(dados)
+  })
+  .then(response => response.json())
+  .then(result => {
+    if(result.success) {
+      // Salvar também no localStorage como backup
+      localStorage.setItem('ficha360', JSON.stringify(dados));
+      alert('✅ Ficha salva com sucesso na Planilha do Google!');
+      btn.innerText = textOriginal;
+      btn.disabled = false;
+    } else {
+      throw new Error(result.error);
+    }
+  })
+  .catch(error => {
+    console.error('Erro:', error);
+    alert('❌ Erro ao salvar: ' + error.message + '\n\nVerifique se a URL do Apps Script está correta.');
+    btn.innerText = textOriginal;
+    btn.disabled = false;
+  });
 }
 
-function exportarJSON() {
+function gerarPDF() {
   const formData = new FormData(fichForm);
   const dados = Object.fromEntries(formData);
-  dados.dataExportacao = new Date().toLocaleString('pt-BR');
   
-  const json = JSON.stringify(dados, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `Ficha360_${dados.razaoSocial || 'Cliente'}_${new Date().toISOString().split('T')[0]}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+  // Criar conteúdo do PDF em HTML
+  const conteudo = `
+    <div style="font-family: Arial, sans-serif; color: #333; max-width: 900px; margin: 0 auto;">
+      <style>
+        body { margin: 0; padding: 20px; }
+        .header { background: linear-gradient(135deg, #0c0c18 0%, #111120 100%); color: #c9a84c; padding: 30px; border-radius: 8px; margin-bottom: 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; }
+        .header p { margin: 5px 0 0 0; color: #857d6e; }
+        .section { background: #f9f9f9; border-left: 4px solid #c9a84c; padding: 20px; margin-bottom: 20px; border-radius: 4px; page-break-inside: avoid; }
+        .section-title { color: #c9a84c; font-size: 16px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
+        .field { margin-bottom: 12px; }
+        .field-label { color: #c9a84c; font-weight: bold; font-size: 12px; text-transform: uppercase; }
+        .field-value { color: #333; margin-top: 4px; padding: 8px; background: white; border-radius: 4px; }
+        .field-empty { color: #999; font-style: italic; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .footer { text-align: center; color: #666; font-size: 11px; margin-top: 30px; padding-top: 15px; border-top: 1px solid #ddd; }
+      </style>
+      
+      <div class="header">
+        <h1>📋 Ficha 360º do Cliente</h1>
+        <p>Setor de Qualidade — Soma Prime Contabilidade</p>
+      </div>
+      
+      <div class="section">
+        <div class="section-title">🏢 Identificação do Cliente</div>
+        <div class="grid">
+          <div class="field">
+            <div class="field-label">Razão Social</div>
+            <div class="field-value">${dados.razaoSocial || '<span class="field-empty">Não preenchido</span>'}</div>
+          </div>
+          <div class="field">
+            <div class="field-label">CNPJ</div>
+            <div class="field-value">${dados.cnpj || '<span class="field-empty">Não preenchido</span>'}</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Ticket Mensal</div>
+            <div class="field-value">R$ ${dados.ticketMensal ? parseFloat(dados.ticketMensal).toLocaleString('pt-BR', {minimumFractionDigits: 2}) : '<span class="field-empty">Não preenchido</span>'}</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Porte</div>
+            <div class="field-value">${dados.porte || '<span class="field-empty">Não preenchido</span>'}</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Data do Contato</div>
+            <div class="field-value">${dados.dataContato ? new Date(dados.dataContato).toLocaleDateString('pt-BR') : '<span class="field-empty">Não preenchido</span>'}</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Responsável</div>
+            <div class="field-value">${dados.responsavel || '<span class="field-empty">Não preenchido</span>'}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <div class="section-title">📞 Preferências de Comunicação</div>
+        <div class="grid">
+          <div class="field">
+            <div class="field-label">Canal Preferido</div>
+            <div class="field-value">${dados.canalPreferido || '<span class="field-empty">Não preenchido</span>'}</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Melhor Horário</div>
+            <div class="field-value">${dados.melhorHorario || '<span class="field-empty">Não preenchido</span>'}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <div class="section-title">⭐ Experiência Atual</div>
+        <div class="field">
+          <div class="field-label">Nota Geral</div>
+          <div class="field-value">${dados.notaGeral}/10</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Pontos Positivos</div>
+          <div class="field-value">${dados.pontosPositivos || '<span class="field-empty">Não preenchido</span>'}</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Pontos de Melhoria</div>
+          <div class="field-value">${dados.pontosMelhoria || '<span class="field-empty">Não preenchido</span>'}</div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <div class="section-title">🚦 Health Score</div>
+        <div class="field">
+          <div class="field-label">Status de Saúde</div>
+          <div class="field-value">${dados.healthScore || '<span class="field-empty">Não preenchido</span>'}</div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <div class="section-title">📝 Plano de Ação</div>
+        <div class="field">
+          <div class="field-label">Problema Identificado</div>
+          <div class="field-value">${dados.problema || '<span class="field-empty">Não preenchido</span>'}</div>
+        </div>
+        <div class="grid">
+          <div class="field">
+            <div class="field-label">Responsável</div>
+            <div class="field-value">${dados.responsavelAcao || '<span class="field-empty">Não preenchido</span>'}</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Prazo de Solução</div>
+            <div class="field-value">${dados.prazoSolucao ? new Date(dados.prazoSolucao).toLocaleDateString('pt-BR') : '<span class="field-empty">Não preenchido</span>'}</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Status</div>
+            <div class="field-value">${dados.status || '<span class="field-empty">Não preenchido</span>'}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <div class="section-title">📌 Observações Finais</div>
+        <div class="field">
+          <div class="field-value">${dados.observacoes || '<span class="field-empty">Não preenchido</span>'}</div>
+        </div>
+      </div>
+      
+      <div class="footer">
+        <p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+        <p>Soma Prime Contabilidade — Setor de Qualidade</p>
+      </div>
+    </div>
+  `;
+  
+  // Abrir em nova aba para impressão/PDF
+  const novaAba = window.open('', '_blank');
+  novaAba.document.write(conteudo);
+  novaAba.document.close();
+  
+  // Preparar para imprimir
+  setTimeout(() => {
+    novaAba.print();
+  }, 250);
 }
 
 // Carregar dados salvos ao iniciar
@@ -1187,6 +1345,9 @@ window.addEventListener('DOMContentLoaded', function() {
         const campo = fichForm.elements[key];
         if(campo) campo.value = parsed[key];
       });
+      if(notaGeralInput) {
+        document.getElementById('notaDisplay').textContent = notaGeralInput.value + '/10';
+      }
     } catch(e) {
       console.error('Erro ao carregar:', e);
     }
